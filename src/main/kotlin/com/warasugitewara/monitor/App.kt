@@ -1,13 +1,29 @@
 package com.warasugitewara.monitor
 
 fun main(args: Array<String>) {
-    val provider = SystemInfoFactory.createProvider()
-    val watchMode = args.contains("--watch")
-    
-    if (watchMode) {
-        runWatchMode(provider)
-    } else {
-        displaySnapshot(provider)
+    when {
+        args.contains("-help") || args.contains("--help") || args.contains("-h") -> {
+            printHelp()
+            return
+        }
+        args.contains("-v") || args.contains("-version") || args.contains("--version") -> {
+            printVersion()
+            return
+        }
+        args.isEmpty() || args.contains("--watch") -> {
+            val provider = SystemInfoFactory.createProvider()
+            val watchMode = args.contains("--watch")
+            
+            if (watchMode) {
+                runWatchMode(provider)
+            } else {
+                displaySnapshot(provider)
+            }
+        }
+        else -> {
+            println("${AnsiColor.BRIGHT_RED}Unknown option: ${args[0]}${AnsiColor.RESET}")
+            println("Use -help for usage information")
+        }
     }
 }
 
@@ -116,5 +132,25 @@ fun printCpuInfo(cpuInfo: CpuInfo) {
 
 fun printExitHint() {
     println("${AnsiColor.DIM}(Press Ctrl+C to exit)${AnsiColor.RESET}")
+}
+
+fun printHelp() {
+    println("${AnsiColor.BRIGHT_CYAN}CLI Resource Monitor${AnsiColor.RESET}")
+    println()
+    println("${AnsiColor.BOLD}Usage:${AnsiColor.RESET}")
+    println("  crm [options]")
+    println()
+    println("${AnsiColor.BOLD}Options:${AnsiColor.RESET}")
+    println("  --watch       Monitor system resources in real-time (1s refresh)")
+    println("  -h, -help     Show this help message")
+    println("  -v, -version  Show version information")
+    println()
+    println("${AnsiColor.BOLD}Examples:${AnsiColor.RESET}")
+    println("  crm           Show system snapshot")
+    println("  crm --watch   Real-time monitoring")
+}
+
+fun printVersion() {
+    println("${AnsiColor.BRIGHT_CYAN}CLI Resource Monitor${AnsiColor.RESET} v0.1.0")
 }
 
