@@ -2,6 +2,7 @@ package com.warasugitewara.monitor
 
 import java.lang.management.ManagementFactory
 import com.sun.management.OperatingSystemMXBean
+import java.io.File
 
 class WindowsSystemInfoProvider : SystemInfoProvider {
     
@@ -49,6 +50,24 @@ class WindowsSystemInfoProvider : SystemInfoProvider {
             CpuInfo(usage = usage.coerceIn(0.0, 100.0 * cores), cores = cores)
         } catch (e: Exception) {
             CpuInfo(usage = 0.0, cores = 0)
+        }
+    }
+    
+    override fun getDiskInfo(drive: String): DiskInfo {
+        return try {
+            val file = File("${drive}:\\")
+            val totalSpace = file.totalSpace
+            val freeSpace = file.freeSpace
+            val usedSpace = totalSpace - freeSpace
+            
+            DiskInfo(
+                drive = drive.uppercase(),
+                totalSpace = totalSpace,
+                usedSpace = usedSpace,
+                freeSpace = freeSpace
+            )
+        } catch (e: Exception) {
+            DiskInfo("C", 0, 0, 0)
         }
     }
     

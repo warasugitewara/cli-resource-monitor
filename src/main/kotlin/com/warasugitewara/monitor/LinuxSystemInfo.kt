@@ -53,5 +53,23 @@ class LinuxSystemInfoProvider : SystemInfoProvider {
         return CpuInfo(usage = usage, cores = cores)
     }
     
+    override fun getDiskInfo(drive: String): DiskInfo {
+        return try {
+            val file = File("/")
+            val totalSpace = file.totalSpace
+            val freeSpace = file.freeSpace
+            val usedSpace = totalSpace - freeSpace
+            
+            DiskInfo(
+                drive = drive,
+                totalSpace = totalSpace,
+                usedSpace = usedSpace,
+                freeSpace = freeSpace
+            )
+        } catch (e: Exception) {
+            DiskInfo("/", 0, 0, 0)
+        }
+    }
+    
     override fun getOsName(): String = "Linux"
 }
