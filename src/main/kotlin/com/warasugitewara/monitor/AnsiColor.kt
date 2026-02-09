@@ -45,9 +45,9 @@ object ProgressBar {
         val empty = width - filled
         val color = AnsiColor.getColorForUsage(percent)
         
-        val bar = "█".repeat(filled) + "░".repeat(empty)
+        val bar = "=".repeat(filled) + "-".repeat(empty)
         val percentStr = String.format("%.1f%%", percent)
         
-        return "$color$bar${AnsiColor.RESET} $percentStr"
+        return "$color[$bar]${AnsiColor.RESET} $percentStr"
     }
 }

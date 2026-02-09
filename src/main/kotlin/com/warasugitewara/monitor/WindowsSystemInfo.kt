@@ -1,8 +1,14 @@
 package com.warasugitewara.monitor
 
 import java.lang.management.ManagementFactory
+import com.sun.management.OperatingSystemMXBean
 
 class WindowsSystemInfoProvider : SystemInfoProvider {
+    companion object {
+        private var lastCpuTime = 0L
+        private var lastSystemTime = 0L
+    }
+    
     override fun getMemoryInfo(): MemoryInfo {
         return try {
             val runtime = Runtime.getRuntime()
@@ -26,10 +32,28 @@ class WindowsSystemInfoProvider : SystemInfoProvider {
     
     override fun getCpuInfo(): CpuInfo {
         return try {
-            val osBean = ManagementFactory.getOperatingSystemMXBean()
-            val cores = osBean.availableProcessors
-            val usage = osBean.systemLoadAverage
-            CpuInfo(usage = if (usage < 0) 0.0 else usage * 100.0 / cores, cores = cores)
+            val osBean = ManagementFactory.getOperatingSystemMXBean() as? OperatingSystemMXBean
+            val cores = ManagementFactory.getOperatingSystemMXBean().availableProcessors
+            
+            var usage = 0.0
+            if (osBean != null) {
+                val cpuTime = osBean.processCpuTime
+                val systemTime = System.nanoTime()
+                
+                if (lastCpuTime > 0 && lastSystemTime > 0) {
+                    val cpuDiff = cpuTime - lastCpuTime
+                    val systemDiff = systemTime - lastSystemTime
+                    if (systemDiff > 0) {
+                        usage = (cpuDiff.toDouble() / systemDiff.toDouble()) * 100.0
+                        usage = usage.coerceIn(0.0, 100.0 * cores)
+                    }
+                }
+                
+                lastCpuTime = cpuTime
+                lastSystemTime = systemTime
+            }
+            
+            CpuInfo(usage = usage, cores = cores)
         } catch (e: Exception) {
             CpuInfo(usage = 0.0, cores = 0)
         }

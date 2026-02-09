@@ -19,28 +19,44 @@ fun displaySnapshot(provider: SystemInfoProvider) {
 }
 
 fun runWatchMode(provider: SystemInfoProvider) {
-    var running = true
-    val thread = Thread {
-        try {
-            Thread.sleep(Long.MAX_VALUE)
-        } catch (e: InterruptedException) {
-            running = false
-        }
-    }
+    clearScreen()
+    hideCursor()
     
-    while (running) {
-        clearScreen()
-        printHeader(provider)
-        printMemoryInfo(provider.getMemoryInfo())
-        printCpuInfo(provider.getCpuInfo())
-        println()
-        println("${AnsiColor.DIM}(Press Ctrl+C to exit)${AnsiColor.RESET}")
-        Thread.sleep(1000)
+    try {
+        while (true) {
+            moveCursorToHome()
+            printHeader(provider)
+            printMemoryInfo(provider.getMemoryInfo())
+            printCpuInfo(provider.getCpuInfo())
+            printExitHint()
+            clearToEndOfScreen()
+            Thread.sleep(1000)
+        }
+    } catch (e: InterruptedException) {
+        // Exit gracefully
+    } finally {
+        showCursor()
     }
 }
 
 fun clearScreen() {
     print("\u001b[2J\u001b[H")
+}
+
+fun moveCursorToHome() {
+    print("\u001b[H")
+}
+
+fun hideCursor() {
+    print("\u001b[?25l")
+}
+
+fun showCursor() {
+    print("\u001b[?25h")
+}
+
+fun clearToEndOfScreen() {
+    print("\u001b[J")
 }
 
 fun printHeader(provider: SystemInfoProvider) {
@@ -95,5 +111,10 @@ fun printCpuInfo(cpuInfo: CpuInfo) {
     val usageLabel = "${AnsiColor.BRIGHT_WHITE}Usage${AnsiColor.RESET}"
     val usageBar = ProgressBar.generate(cpuInfo.usage, 35)
     println("$usageLabel: $usageBar")
+    println()
+}
+
+fun printExitHint() {
+    println("${AnsiColor.DIM}(Press Ctrl+C to exit)${AnsiColor.RESET}")
 }
 
