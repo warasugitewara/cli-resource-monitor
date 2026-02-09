@@ -31,6 +31,7 @@ if ($Uninstall) {
     
     Write-Host ""
     Write-Host "Setup complete! Please restart your terminal and try:"
-    Write-Host "  cli-resource-monitor"
-    Write-Host "  cli-resource-monitor --watch"
+    Write-Host "  crm"
+    Write-Host "  crm --watch"
+    Write-Host "  crm -help"
 }
