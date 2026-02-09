@@ -10,10 +10,10 @@ fun main(args: Array<String>) {
             printVersion()
             return
         }
-        args.isEmpty() || args.contains("--watch") || args.contains("-all") || args.contains("--all") -> {
+        args.isEmpty() || args.contains("--watch") || args.contains("-watch") || args.contains("-all") || args.contains("--all") || args.contains("-wall") -> {
             val provider = SystemInfoFactory.createProvider()
-            val watchMode = args.contains("--watch")
-            val detailedMode = args.contains("-all") || args.contains("--all")
+            val watchMode = args.contains("--watch") || args.contains("-watch") || args.contains("-wall")
+            val detailedMode = args.contains("-all") || args.contains("--all") || args.contains("-wall")
             
             if (watchMode) {
                 runWatchMode(provider, detailedMode)
@@ -211,16 +211,19 @@ fun printHelp() {
     println("  crm [options]")
     println()
     println("${AnsiColor.BOLD}Options:${AnsiColor.RESET}")
-    println("  --watch       Monitor system resources in real-time (1s refresh)")
-    println("  -all          Show detailed information (per-core CPU, disk usage)")
-    println("  -h, -help     Show this help message")
-    println("  -v, -version  Show version information")
+    println("  --watch, -watch   Monitor system resources in real-time (1s refresh)")
+    println("  -all, --all       Show detailed information (per-core CPU, disk usage)")
+    println("  -wall             Watch mode with all details (--watch + -all)")
+    println("  -h, -help         Show this help message")
+    println("  -v, -version      Show version information")
     println()
     println("${AnsiColor.BOLD}Examples:${AnsiColor.RESET}")
-    println("  crm           Show system snapshot")
-    println("  crm --watch   Real-time monitoring")
-    println("  crm -all      Show detailed metrics")
-    println("  crm --watch -all  Real-time monitoring with details")
+    println("  crm               Show system snapshot")
+    println("  crm -watch        Real-time monitoring")
+    println("  crm --watch       Real-time monitoring")
+    println("  crm -all          Show detailed metrics")
+    println("  crm -wall         Real-time monitoring with details")
+    println("  crm --watch --all Real-time monitoring with details")
 }
 
 fun printVersion() {
