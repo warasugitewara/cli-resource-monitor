@@ -89,38 +89,38 @@ fun printMemoryInfo(memInfo: MemoryInfo, detailed: Boolean = false) {
     println("${AnsiColor.BOLD}${AnsiColor.BRIGHT_CYAN}Memory Usage${AnsiColor.RESET}")
     println("${AnsiColor.DIM}─".repeat(60) + AnsiColor.RESET)
     
-    val memUsedMB = memInfo.usedMem / (1024 * 1024)
-    val memTotalMB = memInfo.totalMem / (1024 * 1024)
+    val memUsedMB = memInfo.usedMem.toDouble() / (1024 * 1024)
+    val memTotalMB = memInfo.totalMem.toDouble() / (1024 * 1024)
     val memUsagePct = memInfo.usagePercent
     
     val ramLabel = "${AnsiColor.BRIGHT_WHITE}RAM${AnsiColor.RESET}"
-    val ramValue = "$memUsedMB MB / $memTotalMB MB"
+    val ramValue = "${"%.1f".format(memUsedMB)} MB / ${"%.1f".format(memTotalMB)} MB"
     val ramBar = ProgressBar.generate(memUsagePct, 35)
     println("$ramLabel: $ramValue")
     println("  $ramBar")
     
     if (detailed) {
-        val memFreeGB = memInfo.freeMem / (1024 * 1024 * 1024)
-        val memTotalGB = memInfo.totalMem / (1024 * 1024 * 1024)
-        println("  Free: $memFreeGB GB / Total: $memTotalGB GB")
+        val memFreeGB = memInfo.freeMem.toDouble() / (1024 * 1024 * 1024)
+        val memTotalGB = memInfo.totalMem.toDouble() / (1024 * 1024 * 1024)
+        println("  Free: ${"%.1f".format(memFreeGB)} GB / Total: ${"%.1f".format(memTotalGB)} GB")
     }
     
     if (memInfo.swapTotal > 0) {
-        val swapUsedMB = memInfo.swapUsed / (1024 * 1024)
-        val swapTotalMB = memInfo.swapTotal / (1024 * 1024)
+        val swapUsedMB = memInfo.swapUsed.toDouble() / (1024 * 1024)
+        val swapTotalMB = memInfo.swapTotal.toDouble() / (1024 * 1024)
         val swapUsagePct = memInfo.swapPercent
         
         val swapLabel = "${AnsiColor.BRIGHT_WHITE}Swap${AnsiColor.RESET}"
-        val swapValue = "$swapUsedMB MB / $swapTotalMB MB"
+        val swapValue = "${"%.1f".format(swapUsedMB)} MB / ${"%.1f".format(swapTotalMB)} MB"
         val swapBar = ProgressBar.generate(swapUsagePct, 35)
         println("$swapLabel: $swapValue")
         println("  $swapBar")
     }
     
     if (memInfo.cachedMem > 0) {
-        val cachedMB = memInfo.cachedMem / (1024 * 1024)
+        val cachedMB = memInfo.cachedMem.toDouble() / (1024 * 1024)
         val cachedLabel = "${AnsiColor.BRIGHT_WHITE}Cache${AnsiColor.RESET}"
-        println("$cachedLabel: $cachedMB MB")
+        println("$cachedLabel: ${"%.1f".format(cachedMB)} MB")
     }
     
     println()
@@ -156,19 +156,19 @@ fun printDiskInfo(diskInfo: DiskInfo, detailed: Boolean = false) {
     println("${AnsiColor.BOLD}${AnsiColor.BRIGHT_CYAN}Disk Usage${AnsiColor.RESET}")
     println("${AnsiColor.DIM}─".repeat(60) + AnsiColor.RESET)
     
-    val usedGB = diskInfo.usedSpace / (1024 * 1024 * 1024)
-    val totalGB = diskInfo.totalSpace / (1024 * 1024 * 1024)
+    val usedGB = diskInfo.usedSpace.toDouble() / (1024 * 1024 * 1024)
+    val totalGB = diskInfo.totalSpace.toDouble() / (1024 * 1024 * 1024)
     val usagePct = diskInfo.usagePercent
     
     val driveLabel = "${AnsiColor.BRIGHT_WHITE}${diskInfo.drive}:${AnsiColor.RESET}"
-    val driveValue = "$usedGB GB / $totalGB GB"
+    val driveValue = "${"%.1f".format(usedGB)} GB / ${"%.1f".format(totalGB)} GB"
     val driveBar = ProgressBar.generate(usagePct, 35)
     println("$driveLabel: $driveValue")
     println("  $driveBar")
     
     if (detailed) {
-        val freeGB = diskInfo.freeSpace / (1024 * 1024 * 1024)
-        println("  Free: $freeGB GB")
+        val freeGB = diskInfo.freeSpace.toDouble() / (1024 * 1024 * 1024)
+        println("  Free: ${"%.1f".format(freeGB)} GB")
     }
     
     println()
