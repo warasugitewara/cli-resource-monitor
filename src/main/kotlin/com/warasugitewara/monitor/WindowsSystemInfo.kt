@@ -4,17 +4,14 @@ import java.lang.management.ManagementFactory
 import com.sun.management.OperatingSystemMXBean
 
 class WindowsSystemInfoProvider : SystemInfoProvider {
-    companion object {
-        private var lastCpuTime = 0L
-        private var lastSystemTime = 0L
-    }
     
     override fun getMemoryInfo(): MemoryInfo {
         return try {
-            val runtime = Runtime.getRuntime()
+            val osBean = ManagementFactory.getOperatingSystemMXBean() as? OperatingSystemMXBean
             
-            val totalMem = runtime.totalMemory()
-            val freeMem = runtime.freeMemory()
+            // Get total physical memory via WMI
+            val totalMem = osBean?.totalPhysicalMemorySize ?: Runtime.getRuntime().totalMemory()
+            val freeMem = osBean?.freePhysicalMemorySize ?: Runtime.getRuntime().freeMemory()
             val usedMem = totalMem - freeMem
             
             MemoryInfo(
@@ -37,23 +34,19 @@ class WindowsSystemInfoProvider : SystemInfoProvider {
             
             var usage = 0.0
             if (osBean != null) {
-                val cpuTime = osBean.processCpuTime
-                val systemTime = System.nanoTime()
-                
-                if (lastCpuTime > 0 && lastSystemTime > 0) {
-                    val cpuDiff = cpuTime - lastCpuTime
-                    val systemDiff = systemTime - lastSystemTime
-                    if (systemDiff > 0) {
-                        usage = (cpuDiff.toDouble() / systemDiff.toDouble()) * 100.0
-                        usage = usage.coerceIn(0.0, 100.0 * cores)
+                val systemLoad = osBean.systemCpuLoad
+                if (systemLoad >= 0.0) {
+                    usage = systemLoad * 100.0
+                } else {
+                    // Fallback to process CPU load if system load not available
+                    val processLoad = osBean.processCpuLoad
+                    if (processLoad >= 0.0) {
+                        usage = processLoad * 100.0
                     }
                 }
-                
-                lastCpuTime = cpuTime
-                lastSystemTime = systemTime
             }
             
-            CpuInfo(usage = usage, cores = cores)
+            CpuInfo(usage = usage.coerceIn(0.0, 100.0 * cores), cores = cores)
         } catch (e: Exception) {
             CpuInfo(usage = 0.0, cores = 0)
         }
