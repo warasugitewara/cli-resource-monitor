@@ -71,5 +71,9 @@ class LinuxSystemInfoProvider : SystemInfoProvider {
         }
     }
     
+    override fun getGpuInfo(): GpuInfo {
+        return GpuDetector.detectLinuxGpu()
+    }
+    
     override fun getOsName(): String = "Linux"
 }

@@ -31,9 +31,23 @@ data class DiskInfo(
         get() = if (totalSpace > 0) (usedSpace.toDouble() / totalSpace) * 100 else 0.0
 }
 
+data class GpuInfo(
+    val name: String,        // GPU name
+    val memoryUsed: Long,    // Used VRAM in bytes
+    val memoryTotal: Long,   // Total VRAM in bytes
+    val usage: Double        // GPU usage percentage
+) {
+    val usagePercent: Double
+        get() = if (memoryTotal > 0) (memoryUsed.toDouble() / memoryTotal) * 100 else 0.0
+    
+    val available: Boolean
+        get() = name.isNotEmpty()
+}
+
 interface SystemInfoProvider {
     fun getMemoryInfo(): MemoryInfo
     fun getCpuInfo(): CpuInfo
     fun getDiskInfo(drive: String = "C"): DiskInfo
+    fun getGpuInfo(): GpuInfo
     fun getOsName(): String
 }

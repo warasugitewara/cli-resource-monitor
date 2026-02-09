@@ -71,5 +71,16 @@ class WindowsSystemInfoProvider : SystemInfoProvider {
         }
     }
     
+    override fun getGpuInfo(): GpuInfo {
+        // Try NVIDIA first
+        val nvidia = GpuDetector.detectNvidiaGpu()
+        if (nvidia.available) {
+            return nvidia
+        }
+        
+        // Fallback to Windows WMI for Intel/AMD integrated GPU
+        return GpuDetector.detectWindowsGpu()
+    }
+    
     override fun getOsName(): String = "Windows"
 }

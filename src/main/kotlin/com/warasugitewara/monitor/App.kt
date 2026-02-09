@@ -34,6 +34,7 @@ fun displaySnapshot(provider: SystemInfoProvider, detailed: Boolean = false) {
     printMemoryInfo(provider.getMemoryInfo(), detailed)
     printCpuInfo(provider.getCpuInfo(), detailed)
     printDiskInfo(provider.getDiskInfo(), detailed)
+    printGpuInfo(provider.getGpuInfo(), detailed)
 }
 
 fun runWatchMode(provider: SystemInfoProvider, detailed: Boolean = false) {
@@ -47,6 +48,7 @@ fun runWatchMode(provider: SystemInfoProvider, detailed: Boolean = false) {
             printMemoryInfo(provider.getMemoryInfo(), detailed)
             printCpuInfo(provider.getCpuInfo(), detailed)
             printDiskInfo(provider.getDiskInfo(), detailed)
+            printGpuInfo(provider.getGpuInfo(), detailed)
             printExitHint()
             clearToEndOfScreen()
             Thread.sleep(1000)
@@ -169,6 +171,34 @@ fun printDiskInfo(diskInfo: DiskInfo, detailed: Boolean = false) {
     if (detailed) {
         val freeGB = diskInfo.freeSpace.toDouble() / (1024 * 1024 * 1024)
         println("  Free: ${"%.1f".format(freeGB)} GB")
+    }
+    
+    println()
+}
+
+fun printGpuInfo(gpuInfo: GpuInfo, detailed: Boolean = false) {
+    if (!gpuInfo.available) {
+        return  // GPU not available
+    }
+    
+    println("${AnsiColor.BOLD}${AnsiColor.BRIGHT_CYAN}GPU Information${AnsiColor.RESET}")
+    println("${AnsiColor.DIM}─".repeat(60) + AnsiColor.RESET)
+    
+    val gpuLabel = "${AnsiColor.BRIGHT_WHITE}${gpuInfo.name}${AnsiColor.RESET}"
+    println("$gpuLabel")
+    
+    val usageBar = ProgressBar.generate(gpuInfo.usage, 35)
+    val usageLabel = "${AnsiColor.BRIGHT_WHITE}Usage${AnsiColor.RESET}"
+    println("$usageLabel: $usageBar")
+    
+    if (detailed && gpuInfo.memoryTotal > 0) {
+        val memUsedGB = gpuInfo.memoryUsed.toDouble() / (1024 * 1024 * 1024)
+        val memTotalGB = gpuInfo.memoryTotal.toDouble() / (1024 * 1024 * 1024)
+        val memUsagePct = gpuInfo.usagePercent
+        val memBar = ProgressBar.generate(memUsagePct, 35)
+        val memLabel = "${AnsiColor.BRIGHT_WHITE}Memory${AnsiColor.RESET}"
+        println("$memLabel: ${"%.1f".format(memUsedGB)} GB / ${"%.1f".format(memTotalGB)} GB")
+        println("  $memBar")
     }
     
     println()
