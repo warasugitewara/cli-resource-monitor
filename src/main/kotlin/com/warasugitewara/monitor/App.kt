@@ -10,10 +10,10 @@ fun main(args: Array<String>) {
             printVersion()
             return
         }
-        args.isEmpty() || args.contains("--watch") || args.contains("-all") -> {
+        args.isEmpty() || args.contains("--watch") || args.contains("-all") || args.contains("--all") -> {
             val provider = SystemInfoFactory.createProvider()
             val watchMode = args.contains("--watch")
-            val detailedMode = args.contains("-all")
+            val detailedMode = args.contains("-all") || args.contains("--all")
             
             if (watchMode) {
                 runWatchMode(provider, detailedMode)
