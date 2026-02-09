@@ -1,19 +1,22 @@
 package com.warasugitewara.monitor
 
 fun main(args: Array<String>) {
+    // Normalize flags: remove leading dashes for comparison
+    fun hasFlag(flag: String): Boolean = args.any { it.removePrefix("-").removePrefix("-") == flag }
+    
     when {
-        args.contains("-help") || args.contains("--help") || args.contains("-h") -> {
+        hasFlag("help") || hasFlag("h") -> {
             printHelp()
             return
         }
-        args.contains("-v") || args.contains("-version") || args.contains("--version") -> {
+        hasFlag("v") || hasFlag("version") -> {
             printVersion()
             return
         }
-        args.isEmpty() || args.contains("--watch") || args.contains("-watch") || args.contains("-all") || args.contains("--all") || args.contains("-wall") -> {
+        args.isEmpty() || hasFlag("watch") || hasFlag("all") || hasFlag("wall") -> {
             val provider = SystemInfoFactory.createProvider()
-            val watchMode = args.contains("--watch") || args.contains("-watch") || args.contains("-wall")
-            val detailedMode = args.contains("-all") || args.contains("--all") || args.contains("-wall")
+            val watchMode = hasFlag("watch") || hasFlag("wall")
+            val detailedMode = hasFlag("all") || hasFlag("wall")
             
             if (watchMode) {
                 runWatchMode(provider, detailedMode)
