@@ -3,6 +3,8 @@ package com.warasugitewara.monitor
 import java.io.File
 
 class LinuxSystemInfoProvider : SystemInfoProvider {
+    private val cpuCalculator = CpuUsageCalculator()
+    
     override fun getMemoryInfo(): MemoryInfo {
         val meminfoFile = File("/proc/meminfo")
         if (!meminfoFile.exists()) {
@@ -45,7 +47,10 @@ class LinuxSystemInfoProvider : SystemInfoProvider {
         } else {
             0
         }
-        return CpuInfo(usage = 0.0, cores = cores)
+        
+        val usage = cpuCalculator.getCpuUsage()
+        
+        return CpuInfo(usage = usage, cores = cores)
     }
     
     override fun getOsName(): String = "Linux"
